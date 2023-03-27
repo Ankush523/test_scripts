@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/completions';
 
 if (!OPENAI_API_KEY) {
