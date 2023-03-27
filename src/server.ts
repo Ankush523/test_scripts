@@ -1,37 +1,45 @@
-const ethers = require("ethers");
-const address = "0x816fe884C2D2137C4F210E6a1d925583fa4A917d";
-const url = "wss://ws.testnet.mantle.xyz";
-const polygonurl = "wss://polygon-mumbai.g.alchemy.com/v2/B_5czQpQeXc_6pZlC-wDa_-QD1xhTI86";
-const init = function () {
-  
-  const customWsProvider = new ethers.WebSocketProvider(polygonurl);
+import axios, { AxiosResponse } from 'axios';
+const OPENAI_API_KEY = "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";
+const OPENAI_API_URL = 'https://api.openai.com/v1/completions';
 
-  customWsProvider.on("pending", (tx : string) => {
-    customWsProvider.getTransaction(tx).then(function (transaction : any) {
-      if (transaction.from == address || transaction.to == address) {
-        console.log(transaction);
-      }
+if (!OPENAI_API_KEY) {
+  throw new Error('Missing OpenAI API Key. Please set the OPENAI_API_KEY environment variable.');
+}
+
+const instance = axios.create({
+  baseURL: OPENAI_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+  },
+});
+
+async function convertTransactionHash(hash: string): Promise<string> {
+  try {
+    const prompt = `Convert the following Ethereum transaction hash into a human-readable form:\n${hash}\n\nHuman-readable form: `;
+    const maxTokens = 50;
+
+    const response: AxiosResponse = await instance.post('', {
+      model :"text-davinci-003",
+      prompt,
+      max_tokens: maxTokens,
+      n: 1,
+      stop: null,
+      temperature: 0.5,
     });
-  });
 
-  // customWsProvider.on("block", (blockNumber : number) => {
-  //   customWsProvider.getBlock(blockNumber).then(function (block : any) {
-  //     console.log(block);
-  //   });
-  // });
+    const readableForm = response.data.choices[0]?.text?.trim();
+    return readableForm || 'Unable to convert transaction hash';
+  } catch (error) {
+    console.error('Error while converting transaction hash:', error);
+    return 'Error while converting transaction hash';
+  }
+}
 
-  customWsProvider.websocket.on("error", async () => {
-    console.log(`Unable to connect to ${polygonurl} retrying in 3s...`);
-    setTimeout(init, 3000);
-  });
+(async () => {
+    const transactionHash = '0x729c14b31e9adcc1a7af96632ca34a36696f6f72050813501f87a6f9456706e4';
+    const readableForm = await convertTransactionHash(transactionHash);
+    console.log('Human-readable form:', readableForm);
+})();
 
-  customWsProvider.websocket.on("close", async (code : number) => {
-    console.log(
-      `Connection lost with code ${code}! Attempting reconnect in 3s...`
-    );
-    customWsProvider._websocket.terminate();
-    setTimeout(init, 3000);
-  });
-};
-
-init();
+// const hash = '0x729c14b31e9adcc1a7af96632ca34a36696f6f72050813501f87a6f9456706e4';
