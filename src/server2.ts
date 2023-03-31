@@ -1,11 +1,8 @@
 import { ethers } from "ethers";
 import axios from "axios";
-
-// Replace this with your Ethereum JSON-RPC endpoint
 const providerUrl = "https://polygon-mumbai.g.alchemy.com/v2/B_5czQpQeXc_6pZlC-wDa_-QD1xhTI86";
 const provider = new ethers.JsonRpcProvider(providerUrl);
 
-// Replace this with your Etherscan API key
 const polygonscanApiKey = "6CDZ8DMKHHZ3D5ZVEQF48HPUX67BNZUEQ1";
 
 async function getContractABI(contractAddress: string): Promise<any> {
@@ -48,11 +45,9 @@ async function getPendingContractAddress(transactionHash: string): Promise<strin
   } catch (error) {
     console.error("Error while fetching transaction data:", error);
   }
-
   return null;
 }
 
-// Replace this with your transaction hash
 const transactionHash = "0xdfd0b0e36daa1a841e9ea310029b6ef8b4ab70c1f6eb8f4639b03c9bedb5258c";
 
 getPendingContractAddress(transactionHash).then(async (contractAddress) => {
