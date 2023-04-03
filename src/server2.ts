@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { Dcyfr } from 'bytekode-eth-decoder'
 import axios from "axios";
 const providerUrl = "https://polygon-mumbai.g.alchemy.com/v2/B_5czQpQeXc_6pZlC-wDa_-QD1xhTI86";
 const provider = new ethers.JsonRpcProvider(providerUrl);
@@ -12,6 +13,13 @@ async function getContractABI(contractAddress: string): Promise<any> {
     );
 
     if (response.data.status === "1") {
+      const dcyfr = new Dcyfr(response.data.result);
+      const data = '0xcf81464b'
+      const decodedResponse = dcyfr.getTxInfoFromData({ data })
+      console.log(decodedResponse)
+      const func = decodedResponse?.func
+      console.log("Executed Function : ",func)
+      console.log('------------------------------------------------------------------')
       return JSON.parse(response.data.result);
     } else {
       console.error("Error while fetching contract ABI:", response.data.message);
@@ -53,8 +61,8 @@ const transactionHash = "0xdfd0b0e36daa1a841e9ea310029b6ef8b4ab70c1f6eb8f4639b03
 getPendingContractAddress(transactionHash).then(async (contractAddress) => {
   if (contractAddress) {
     console.log("Contract address:", contractAddress);
-
-    const contractABI = await getContractABI(contractAddress);
+    console.log("----------------------------------------------------------------")
+    const contractABI = await getContractABI("0x96b82b65acf7072efeb00502f45757f254c2a0d4");
     if (contractABI) {
       console.log("Contract ABI:", contractABI);
     } else {
@@ -64,3 +72,6 @@ getPendingContractAddress(transactionHash).then(async (contractAddress) => {
     console.log("Unable to get contract address from the given transaction hash.");
   }
 });
+
+// 0xcc954a672dc0340a2ee836998a465aa163888a55dee3919efa63bc210e660342
+// 0xdfd0b0e36daa1a841e9ea310029b6ef8b4ab70c1f6eb8f4639b03c9bedb5258c
