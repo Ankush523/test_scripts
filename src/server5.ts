@@ -17,7 +17,9 @@
 
 //   customWsProvider.on("pending", (tx : string) => {
 //     customWsProvider.getTransaction(tx).then(function (transaction : any) {
+//       console.log("hello")
 //       if (transaction.from == address || transaction.to == address) {
+//         console.log("Hi..")
 //         console.log("Transaction Data : ",transaction.data);
 //         txndata = transaction.data;
 //         getPendingContractAddress(transaction.hash).then(async (contractAddress) => {
@@ -95,11 +97,11 @@
 import { ethers } from "ethers";
 import axios from "axios";
 import { Dcyfr } from "bytekode-eth-decoder";
-const provider = new ethers.WebSocketProvider('wss://polygon-mainnet.g.alchemy.com/v2/s5BwByPukIVosEOZEfXU68neTN4WsDOy');
+const provider = new ethers.providers.WebSocketProvider('wss://polygon-mumbai.g.alchemy.com/v2/CC-YaEP9wPG0mtb2SlesCoDRUlfhAppE');
 
 const address = "0x816fe884C2D2137C4F210E6a1d925583fa4A917d";
-const providerUrl = "https://polygon-mainnet.g.alchemy.com/v2/s5BwByPukIVosEOZEfXU68neTN4WsDOy";
-const polygon_provider = new ethers.JsonRpcProvider(providerUrl);
+const providerUrl = "https://polygon-mumbai.g.alchemy.com/v2/CC-YaEP9wPG0mtb2SlesCoDRUlfhAppE";
+const polygon_provider = new ethers.providers.JsonRpcProvider(providerUrl);
 const polygonscanApiKey = "6MD3XR8ZUEPW5KBCBXHB5R741QGR4HES4B";
 
 var txndata = '';
@@ -130,8 +132,8 @@ async function getConfirmedTransactionDetails(txHash : any) {
   }
 }
 
-provider.on('block', async (blockNumber) => {
-  const block = await provider.getBlock(blockNumber, true);
+provider.on('block', async (blockNumber : any) => {
+  const block = await provider.getBlock(blockNumber);
   if (block && block.transactions) {
     for (const tx of block.transactions) {
       await getConfirmedTransactionDetails(tx);
@@ -142,7 +144,7 @@ provider.on('block', async (blockNumber) => {
 async function getContractABI(contractAddress: string): Promise<any> {
     try {
       const response = await axios.get(
-          `https://api.polygonscan.com/api?module=contract&action=getabi&address=${contractAddress}&apikey=${polygonscanApiKey}`
+          `https://api-testnet.polygonscan.com/api?module=contract&action=getabi&address=${contractAddress}&apikey=${polygonscanApiKey}`
       );
       if (response.data.status === "1") {
         const dcyfr = new Dcyfr(response.data.result);
