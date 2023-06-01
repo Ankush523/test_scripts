@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { Dcyfr } from 'bytekode-eth-decoder'
 import axios from "axios";
 const providerUrl = "https://polygon-mumbai.g.alchemy.com/v2/B_5czQpQeXc_6pZlC-wDa_-QD1xhTI86";
-const provider = new ethers.JsonRpcProvider(providerUrl);
+const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 
 const polygonscanApiKey = "6CDZ8DMKHHZ3D5ZVEQF48HPUX67BNZUEQ1";
 
